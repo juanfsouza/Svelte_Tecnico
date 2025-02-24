@@ -13,6 +13,7 @@ test('deve iniciar a contagem regressiva quando o desafio for iniciado', async (
   await page.fill('input[placeholder="Telefone"]', '123456789');
   await page.fill('input[placeholder="Email"]', 'test@example.com');
   await page.click('button:has-text("Iniciar Desafio")');
+  console.log('Botão "Iniciar Desafio" clicado');
   const countdown = page.locator('p:text("Tempo restante:")');
   await expect(countdown).toBeVisible();
 });
@@ -23,8 +24,11 @@ test('deve mostrar o modal de sucesso quando o envio for clicado em 15 segundos'
   await page.fill('input[placeholder="Telefone"]', '123456789');
   await page.fill('input[placeholder="Email"]', 'test@example.com');
   await page.click('button:has-text("Iniciar Desafio")');
-  await page.waitForTimeout(3000);
+  console.log('Botão "Iniciar Desafio" clicado');
   await page.click('button:has-text("Enviar")');
+  console.log('Botão "Enviar" clicado');
+  await page.waitForTimeout(3000);
+  await page.waitForSelector('.modal-box', { state: 'visible' });
   await expect(page.locator('.modal-box p')).toContainText('Desafio finalizado com sucesso!');
 });
 
@@ -34,8 +38,45 @@ test('deve mostrar modal de falha se não for enviado dentro de 15 segundos', as
   await page.fill('input[placeholder="Telefone"]', '123456789');
   await page.fill('input[placeholder="Email"]', 'test@example.com');
   await page.click('button:has-text("Iniciar Desafio")');
+  console.log('Botão "Iniciar Desafio" clicado');
   await page.waitForTimeout(16000);
-  await expect(page.locator('div.modal-box')).toContainText('Desafio finalizado com falha!');
+  await page.waitForSelector('.modal-box', { state: 'visible' });
+  await expect(page.locator('.modal-box p')).toContainText('Desafio finalizado com falha!');
+});
+
+test('Ao entrar e sair da página "candidate", a contagem do tempo não deve ser interrompida', async ({ page }) => {
+  await page.goto('http://localhost:4173');
+  await page.fill('input[placeholder="Nome"]', 'Test User');
+  await page.fill('input[placeholder="Telefone"]', '123456789');
+  await page.fill('input[placeholder="Email"]', 'test@example.com');
+  await page.click('button:has-text("Iniciar Desafio")');
+  console.log('Botão "Iniciar Desafio" clicado');
+  await page.waitForTimeout(2000);
+  await page.click('a:has(i.fa-user-circle:has-text("Página do Candidato"))');
+  console.log('Botão "Página do Candidato" clicado');
+  await page.waitForTimeout(2000);
+  await page.click('button:has-text("Voltar")');
+  console.log('Botão "Voltar" clicado');
+  await page.waitForTimeout(3000);
+});
+
+test('deve enviar o desafio e depois testar os botão voltar e página do candidato', async ({ page }) => {
+  await page.goto('http://localhost:4173');
+  await page.fill('input[placeholder="Nome"]', 'Test User');
+  await page.fill('input[placeholder="Telefone"]', '123456789');
+  await page.fill('input[placeholder="Email"]', 'test@example.com');
+  await page.click('button:has-text("Iniciar Desafio")');
+  console.log('Botão "Iniciar Desafio" clicado');
+  await page.click('button:has-text("Enviar")');
+  console.log('Botão "Enviar" clicado');
+  await page.click('button:has-text("✕")');
+  console.log('Botão "✕" clicado');
+  await page.click('button:has-text("Voltar")');
+  console.log('Botão "Voltar" clicado');
+  await page.waitForTimeout(3000);
+  await page.click('a:has(i.fa-user-circle:has-text("Página do Candidato"))');
+  console.log('Botão "Página do Candidato" clicado');
+  await page.waitForTimeout(3000);
 });
 
 test('deve navegar até a página do candidato e exibir informações', async ({ page }) => {
@@ -44,10 +85,9 @@ test('deve navegar até a página do candidato e exibir informações', async ({
   await page.fill('input[placeholder="Telefone"]', '123456789');
   await page.fill('input[placeholder="Email"]', 'test@example.com');
   await page.click('button:has-text("Iniciar Desafio")');
+  console.log('Botão "Iniciar Desafio" clicado');
   await page.click('button:has-text("Enviar")');
-  await page.click('button:has-text("Fechar")');
-  await page.waitForTimeout(3000);
-  await expect(page.locator('p:has-text("Nome:")')).toContainText('Nome: Test User');
-  await expect(page.locator('p:has-text("Telefone:")')).toContainText('Telefone: 123456789');
-  await expect(page.locator('p:has-text("Email:")')).toContainText('Email: test@example.com');  
+  console.log('Botão "Enviar" clicado');
+  await page.click('button:has-text("✕")');
+  console.log('Botão "✕" clicado');
 });

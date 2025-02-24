@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@layer components {
+    .alert-success {
+      @apply bg-green-500 text-white;
+    }
+}
+
 body {
     background: radial-gradient(circle, rgba(15,15,18,1) 0%, rgba(22,22,27,1) 23%, rgba(26,26,32,1) 100%);
 }
