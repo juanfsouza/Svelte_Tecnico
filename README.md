@@ -44,5 +44,8 @@ Este repositório contém a solução para o desafio de desenvolvimento front-en
 1. Clone este repositório:
 
    ```bash
-   git clone https://github.com/seu-usuario/desafio.git
-   cd desafio
+   git clone https://github.com/juanfsouza/Svelte_Tecnico.git
+   cd to project
+   pnpm install
+   pnpm run dev
+   npx playwright test browser.spec.ts
